@@ -1,8 +1,28 @@
-﻿@{
+﻿@using Sentence_Builder.Models;
+@using Sentence_Builder_Backend;
+
+@model SentenceModel;
+
+@{
     ViewData["Title"] = "Home Page";
 }
 
+
 <div class="text-center">
     <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+    <p>This program will allow you to construct a sentence by selecting words based on their word category.</p>
+
+    <div>
+        @Html.DropDownListFor(m => m.WordType,
+        new SelectList(Enum.GetValues(typeof(Sentence.WordTypes))),
+        "Select Word Type")
+    </div>
+
 </div>
+
+@section Scripts {
+    @*@Scripts.Render("~/bundles/jqueryval")*@
+    <script type="text/javascript">
+        
+    </script>
+}
