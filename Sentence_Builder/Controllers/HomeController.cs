@@ -2,6 +2,7 @@
 using Sentence_Builder.Models;
 using System.Diagnostics;
 using Sentence_Builder_Backend;
+using Microsoft.AspNetCore.Mvc.Rendering;
 //using Sentence_Builder.Models;
 
 namespace Sentence_Builder.Controllers
@@ -10,7 +11,7 @@ namespace Sentence_Builder.Controllers
     {
         private readonly ILogger<HomeController> _logger;
         public Sentence SentenceBL = new Sentence();
-        public string sentence = string.Empty;
+        //public string sentence = string.Empty;
 
         public HomeController(ILogger<HomeController> logger)
         {
@@ -35,14 +36,25 @@ namespace Sentence_Builder.Controllers
 
 
         [HttpGet]
-        public IActionResult GetWordList(int wordType)
+        public IActionResult GetWordList(string wordType)
         {
-            List<string> wordTypes = SentenceBL.GetWordsByType(wordType);
+            List<string> words = SentenceBL.GetWordsByType(wordType);
 
-            return View();
+            var wordList = words.Select(m => new SelectListItem()
+            {
+                Text = m,
+                Value = wordType.ToString(),
+            });
+
+            return Json(wordList);
         }
 
-        public string AddWordToSentence(string word) => sentence = sentence + " " + word;
+        public IActionResult AddWordToSentence(string word, string sentence)
+        {
+            sentence = sentence + " " + word;
+
+            return Json(sentence); 
+        }
 
         public IActionResult OnSubmitSentence(string sentence)
         {

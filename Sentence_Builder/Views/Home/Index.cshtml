@@ -9,20 +9,61 @@
 
 
 <div class="text-center">
-    <h1 class="display-4">Welcome</h1>
+    <h3 class="display-4">Welcome</h3>
     <p>This program will allow you to construct a sentence by selecting words based on their word category.</p>
-
+    @using (Html.BeginForm("OnSubmitSentence", "Home", FormMethod.Post, new { id = "demoForm", name = "demoForm" }))
+    {
     <div>
+        @Html.LabelFor(m => m.WordType)
         @Html.DropDownListFor(m => m.WordType,
         new SelectList(Enum.GetValues(typeof(Sentence.WordTypes))),
-        "Select Word Type")
+        "Select Word Type", new { id = "wordTypeList" })
+    </div>
+    <div>
+        @Html.LabelFor(m => m.Word)
+        @Html.DropDownListFor(m => m.Word, new SelectList(Enumerable.Empty<SelectListItem>(), "", "selectedWord"),
+            "Select a Word", new { id = "wordList" })
     </div>
 
+        <span id="resultMessage"></span>
+        <div>
+            @*<input type="submit" name="OnSubmitSentence" value="Save" />*@
+        </div>
+    }
 </div>
 
-@section Scripts {
-    @*@Scripts.Render("~/bundles/jqueryval")*@
+<script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.2.1.min.js"></script>
     <script type="text/javascript">
-        
+    $(document).ready(function () {
+        $("#wordTypeList").change(function () {
+            var dID = $(this).val();
+            $.getJSON("../Home/GetWordList", { wordType: dID },
+                function (data) {
+                    var select = $("#wordList");
+                    select.empty();
+                    select.append($('<option/>', {
+                        value: 0,
+                        text: "Select a Word"
+                    }));
+                    $.each(data, function (index, itemData) {
+                        optionText = itemData.text;
+                        optionValue = itemData.value;
+                        select.append(`<option value="${optionValue}">
+                                           ${optionText}
+                                      </option>`);
+                    });
+                });
+        });
+
+        $("#wordList").change(function () {
+            var word = $("#wordList option:selected").text().trim();
+            var sentence = $("#resultMessage").text();
+            $.getJSON("../Home/AddWordToSentence", { word: word, sentence: sentence },
+                function (data) {
+                    $('#resultMessage').html(data).attr('data-action-success', data.success);
+                
+               });
+        });
+
+    });
     </script>
-}
